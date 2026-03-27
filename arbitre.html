@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CD Tir 34 — Mission Arbitre (Remboursement)</title>
+
+  <!-- Libs PDF (ONLINE) -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#f6f7fb;
+      --txt:#0f1222;
+      --muted:#55607a;
+      --line:#e8ecf3;
+
+      /* Arbitres - Couleurs identiques */
+      --brand:#1aa66a;
+      --brand2:#2fcf8f;
+      --soft:#eafaf2;
+
+      --shadow: 0 10px 30px rgba(16,24,40,.08);
+      --shadow-lg: 0 20px 50px rgba(26,166,106,.15);
+      --radius:18px;
+      --radius2:22px;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:var(--bg);
+      color:var(--txt);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    @keyframes slideUp{
+      from { opacity:0; transform: translateY(20px); }
+      to { opacity:1; transform: translateY(0); }
+    }
+    @keyframes fadeIn{
+      from { opacity:0; }
+      to { opacity:1; }
+    }
+
+    .wrap{
+      max-width:1100px;
+      margin:32px auto;
+      padding:0 20px;
+      animation: slideUp 0.6s ease-out;
+    }
+
+    /* Bandeau écran (non capturé dans le PDF) */
+    .hero{
+      background:linear-gradient(135deg, var(--brand), var(--brand2));
+      color:#fff;
+      border-radius:var(--radius2);
+      padding:24px 28px;
+      box-shadow:var(--shadow-lg);
+      display:flex;
+      gap:20px;
+      align-items:center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before{
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at 20% 80%, rgba(255,255,255,.15) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero__logo{
+      width:90px;
+      height:90px;
+      border-radius:18px;
+      background:rgba(255,255,255,.25);
+      padding:12px;
+      object-fit:contain;
+      box-shadow:0 12px 28px rgba(0,0,0,.2);
+      flex:0 0 auto;
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(10px);
+    }
+    .hero h1{
+      margin:0;
+      font-size:clamp(22px,3vw,34px);
+      font-weight: 800;
+      line-height:1.2;
+      position: relative;
+      z-index: 1;
+      letter-spacing: 0.3px;
+    }
+    .hero p{
+      margin:8px 0 0;
+      opacity:.92;
+      font-size: 15px;
+      font-weight: 500;
+      position: relative;
+      z-index: 1;
+      line-height: 1.4;
+    }
+    .pill{
+      display:inline-block;
+      margin-top:12px;
+      background:rgba(255,255,255,.22);
+      border:1.5px solid rgba(255,255,255,.35);
+      padding:8px 14px;
+      border-radius:999px;
+      font-weight:700;
+      font-size:13px;
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Zone capturée PDF : 1 colonne (A4 friendly) */
+    #pdfArea{
+      margin-top:20px;
+      background:#fff;
+      border:1.5px solid var(--line);
+      border-radius:var(--radius2);
+      padding:20px;
+      box-shadow:var(--shadow);
+      max-width:760px;
+      margin-left:auto;
+      margin-right:auto;
+      animation: fadeIn 0.8s ease-out 0.2s both;
+    }
+
+    /* Entête PDF coloré (visible seulement en PDF) */
+    .pdfHeader{
+      display:none;
+      align-items:center;
+      gap:12px;
+      padding:14px 16px;
+      border-radius:16px;
+      background:linear-gradient(135deg, rgba(26,166,106,.92), rgba(47,207,143,.92));
+      color:#fff;
+      margin-bottom: 16px;
+    }
+    .pdfHeader img{
+      width:42px;
+      height:42px;
+      object-fit:contain;
+      background:rgba(255,255,255,.25);
+      border-radius:12px;
+      padding:8px;
+      flex:0 0 auto;
+    }
+    .pdfHeader__title{
+      font-size:16px;
+      font-weight:800;
+      line-height:1.2;
+      letter-spacing: 0.2px;
+    }
+    .pdfHeader__sub{
+      font-size:12px;
+      font-weight:600;
+      opacity:.95;
+      margin-top:3px;
+      line-height:1.3;
+    }
+
+    /* Sections */
+    .section{
+      border:1.5px solid #e6ebf4;
+      border-radius:var(--radius);
+      padding:18px 20px;
+      margin-top:16px;
+      background:#fff;
+      transition: all 0.3s ease;
+    }
+    .section:hover{
+      border-color: rgba(26,166,106,.3);
+      box-shadow: 0 5px 15px rgba(26,166,106,.08);
+    }
+    .section h2{
+      margin:0 0 16px;
+      font-size:17px;
+      font-weight: 700;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .badgeNum{
+      width:32px;
+      height:32px;
+      border-radius:10px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      background:var(--soft);
+      border:1.5px solid rgba(26,166,106,.25);
+      color:#0d5c3e;
+      flex:0 0 auto;
+      font-size:15px;
+      box-shadow: 0 2px 8px rgba(26,166,106,.1);
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      margin-bottom: 14px;
+    }
+    @media (max-width:640px){
+      .row{grid-template-columns:1fr}
+    }
+
+    label{
+      display:block;
+      font-weight:700;
+      font-size:13px;
+      color:#334;
+      margin:0 0 8px;
+      letter-spacing: 0.2px;
+    }
+    .req{
+      color:#d11;
+      font-weight:900;
+    }
+
+    input, select{
+      width:100%;
+      border:1.5px solid #e2e7f0;
+      border-radius:12px;
+      padding:12px 14px;
+      font-size:14px;
+      outline:none;
+      background:#fff;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    input:hover, select:hover{
+      border-color: rgba(26,166,106,.35);
+    }
+    input:focus, select:focus{
+      border-color:var(--brand);
+      box-shadow:0 0 0 4px rgba(26,166,106,.15);
+      transform: translateY(-1px);
+    }
+
+    .hint{
+      margin-top:8px;
+      color:#556;
+      font-size:13px;
+      line-height:1.4;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hint::before{
+      content: 'ℹ️';
+      font-size: 11px;
+    }
+
+    /* Totaux */
+    .totals{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      margin-top:16px;
+    }
+    .kpi{
+      border:1.5px solid rgba(26,166,106,.25);
+      background:linear-gradient(135deg, rgba(234,250,242,1), rgba(255,255,255,1));
+      border-radius:16px;
+      padding:14px 16px;
+      transition: all 0.3s ease;
+    }
+    .kpi:hover{
+      border-color: rgba(26,166,106,.4);
+      transform: scale(1.02);
+    }
+    .kpi b{
+      display:block;
+      font-size:13px;
+      color:#245;
+      line-height:1.3;
+      font-weight: 700;
+    }
+    .kpi span{
+      display:block;
+      margin-top:8px;
+      font-size:24px;
+      font-weight:900;
+      line-height:1.1;
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Case attestation : anti-chevauchement (PDF/html2canvas) */
+    .checkline{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      margin-top:16px;
+      padding:14px 16px;
+      border:1.5px dashed rgba(26,166,106,.35);
+      border-radius:14px;
+      background:rgba(234,250,242,.5);
+      transition: all 0.2s ease;
+    }
+    .checkline:hover{
+      background:rgba(234,250,242,.8);
+      border-color: rgba(26,166,106,.5);
+    }
+    .checkline input{
+      width:20px;
+      height:20px;
+      margin-top:3px;
+      flex:0 0 auto;
+      cursor: pointer;
+      accent-color: var(--brand);
+    }
+    .checkline b{
+      display:block;
+      font-size:14px;
+      line-height:1.3;
+      margin:0;
+      white-space:normal;
+      font-weight: 700;
+    }
+    .checkline small{
+      display:block;
+      margin-top:7px;
+      font-size:12px;
+      line-height:1.3;
+      color:#55607a;
+      white-space:normal;
+      font-weight: 500;
+    }
+
+    /* petit boost en mode PDF */
+    #pdfArea.pdf-mode .checkline b,
+    #pdfArea.pdf-mode .checkline small{
+      line-height:1.3;
+    }
+
+    /* Signature trésorier (PDF only) */
+    .pdfTreasurer{
+      display:none;
+      margin-top:16px;
+      padding-top:14px;
+      border-top:1.5px solid #e8ecf3;
+      color:#223;
+      font-size:13px;
+      line-height:1.3;
+    }
+    .pdfTreasurer b{
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .pdfFooter__line{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+    .pdfFooter__sig{
+      min-width:230px;
+      border:1.5px solid #e6ebf4;
+      border-radius:14px;
+      padding:12px 14px;
+      color:#445;
+      background:#fff;
+      font-size: 12px;
+    }
+
+    /* Mode PDF */
+    #pdfArea.pdf-mode .pdfHeader{display:flex}
+    #pdfArea.pdf-mode .pdfTreasurer{display:block}
+
+    /* Boutons hors PDF */
+    .actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:20px;
+      max-width:760px;
+      margin-left:auto;
+      margin-right:auto;
+      animation: fadeIn 1s ease-out 0.4s both;
+    }
+    button{
+      border:0;
+      border-radius:14px;
+      padding:13px 18px;
+      font-weight:800;
+      font-size:14px;
+      cursor:pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      letter-spacing: 0.3px;
+    }
+    button:hover{ transform: translateY(-2px); }
+    button:active{ transform: translateY(0); }
+
+    .btn-primary{
+      background:linear-gradient(135deg, var(--brand), var(--brand2));
+      color:#fff;
+      box-shadow: 0 10px 25px rgba(26,166,106,.25);
+    }
+    .btn-primary:hover{
+      box-shadow: 0 15px 35px rgba(26,166,106,.35);
+    }
+
+    .btn-light{
+      background:#fff;
+      color:#111;
+      border: 1.5px solid var(--line);
+    }
+    .btn-light:hover{
+      border-color: var(--brand);
+      color: var(--brand);
+      box-shadow: 0 5px 15px rgba(26,166,106,.15);
+    }
+
+    .btn-dark{
+      background:#111827;
+      color:#fff;
+      box-shadow: 0 5px 15px rgba(0,0,0,.1);
+    }
+    .btn-dark:hover{
+      background:#1f2937;
+      box-shadow: 0 8px 20px rgba(0,0,0,.15);
+    }
+
+    /* Impression */
+    @media print{
+      .hero, .actions{display:none !important}
+      body{background:#fff}
+      #pdfArea{box-shadow:none;border:0;margin-top:0}
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <img class="hero__logo" src="logo_34.jpg" alt="Logo CD Tir 34">
+      <div>
+        <h1>Demande de remboursement — Mission Arbitre</h1>
+        <p>PDF A4 (portrait) téléchargeable : KM, péages, hôtel, restaurant.</p>
+        <div class="pill">Comité Départemental de Tir — Hérault (34)</div>
+      </div>
+    </header>
+
+    <!-- Zone capturée PDF -->
+    <div id="pdfArea">
+      <!-- Entête PDF coloré -->
+      <div class="pdfHeader">
+        <img src="logo_34.jpg" alt="Logo CD Tir 34">
+        <div>
+          <div class="pdfHeader__title">Demande de remboursement — Mission Arbitre</div>
+          <div class="pdfHeader__sub">Comité Départemental de Tir — Hérault (34)</div>
+        </div>
+      </div>
+
+      <!-- 1) Identité -->
+      <section class="section">
+        <h2><span class="badgeNum">1</span> Identité</h2>
+
+        <div class="row">
+          <div>
+            <label>Nom <span class="req">*</span></label>
+            <input id="nom" required>
+          </div>
+          <div>
+            <label>Prénom <span class="req">*</span></label>
+            <input id="prenom" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Club <span class="req">*</span></label>
+            <input id="club" required>
+          </div>
+          <div>
+            <label>N° licence</label>
+            <input id="licence">
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Email <span class="req">*</span></label>
+            <input id="email" type="email" required>
+          </div>
+          <div>
+            <label>Téléphone</label>
+            <input id="tel">
+          </div>
+        </div>
+      </section>
+
+      <!-- 2) Mission -->
+      <section class="section">
+        <h2><span class="badgeNum">2</span> Mission</h2>
+
+        <div style="margin-bottom:14px">
+          <label>Intitulé mission / compétition <span class="req">*</span></label>
+          <input id="intitule" placeholder="Ex : Championnat départemental 10 m" required>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Lieu <span class="req">*</span></label>
+            <input id="lieu" placeholder="Ville / Stand" required>
+          </div>
+          <div>
+            <label>Aller / retour</label>
+            <select id="ar">
+              <option value="Oui">Oui</option>
+              <option value="Non">Non</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Date début <span class="req">*</span></label>
+            <input id="d1" type="date" required>
+          </div>
+          <div>
+            <label>Date fin <span class="req">*</span></label>
+            <input id="d2" type="date" required>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3) Frais -->
+      <section class="section">
+        <h2><span class="badgeNum">3</span> Frais à rembourser</h2>
+
+        <div class="row">
+          <div>
+            <label>Distance totale (km)</label>
+            <input id="km" type="number" min="0" step="1" placeholder="Ex : 180">
+          </div>
+          <div>
+            <label>Taux kilométrique (€/km)</label>
+            <input id="taux" type="text" value="0,40" readonly>
+            <div class="hint">Taux fixé à 0,40 €/km.</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Autoroute / péages (€)</label>
+            <input id="peage" type="number" min="0" step="0.01" value="0">
+          </div>
+          <div>
+            <label>Hôtel (€)</label>
+            <input id="hotel" type="number" min="0" step="0.01" value="0">
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Restaurant (€)</label>
+            <input id="resto" type="number" min="0" step="0.01" value="0">
+          </div>
+          <div>
+            <label>Autres (optionnel) (€)</label>
+            <input id="autres" type="number" min="0" step="0.01" value="0">
+          </div>
+        </div>
+
+        <div class="totals">
+          <div class="kpi">
+            <b>Total KM (km × 0,40)</b>
+            <span id="totalKm">—</span>
+          </div>
+          <div class="kpi">
+            <b>Total général</b>
+            <span id="totalGen">0,00 €</span>
+          </div>
+        </div>
+
+        <div class="checkline">
+          <input id="atteste" type="checkbox">
+          <div>
+            <b>J'atteste sur l'honneur l'exactitude de mes déclarations.</b>
+            <small>(La signature du trésorier figure en bas du PDF.)</small>
+          </div>
+        </div>
+
+        <div class="hint">⚠️ Les justificatifs (factures, autoroute) ne sont pas intégrés automatiquement dans le PDF.</div>
+      </section>
+
+      <!-- Signature trésorier (PDF only) -->
+      <div id="pdfTreasurer" class="pdfTreasurer">
+        <b>Signature du trésorier</b>
+        <div id="faitaLine" style="margin-top:10px;margin-bottom:8px;font-size:13px;"></div>
+        <div class="pdfFooter__line">
+          <div class="pdfFooter__sig">Nom : ____________________<br>Date : ____ / ____ / ______</div>
+          <div class="pdfFooter__sig">Signature :</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions" id="actionsBar">
+      <button class="btn-light" id="btnBack" type="button">← Retour accueil</button>
+
+      <button class="btn-primary" id="btnPdf" type="button">📄 Télécharger le PDF</button>
+      <button class="btn-light" id="btnPrint" type="button">🖨️ Imprimer</button>
+      <button class="btn-dark" id="btnReset" type="button">↺ Réinitialiser</button>
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const n = (v) => {
+      const x = Number(String(v ?? "").replace(",", "."));
+      return Number.isFinite(x) ? x : 0;
+    };
+
+    // FIX: maximumFractionDigits (typo + sécurité)
+    const eur = (x) =>
+      Number(x || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+
+    const TAUX_KM = 0.40;
+    const FAIT_A = "Montpellier";
+
+    function calc(){
+      const km = n($("km").value);
+      const peage = n($("peage").value);
+      const hotel = n($("hotel").value);
+      const resto = n($("resto").value);
+      const autres = n($("autres").value);
+
+      const totalKm = (km > 0) ? km * TAUX_KM : 0;
+      $("totalKm").textContent = (km > 0) ? eur(totalKm) : "—";
+
+      const totalGen = totalKm + peage + hotel + resto + autres;
+      $("totalGen").textContent = eur(totalGen);
+    }
+    ["km","peage","hotel","resto","autres"].forEach(id => {
+      $(id).addEventListener("input", calc);
+    });
+    calc();
+
+    // ===== Bouton RETOUR (avec protection anti-perte de saisie) =====
+    let isDirty = false;
+    document.querySelectorAll("#pdfArea input, #pdfArea select").forEach(el => {
+      el.addEventListener("input", () => isDirty = true);
+      el.addEventListener("change", () => isDirty = true);
+    });
+
+    function goBack(){
+      if(isDirty){
+        const ok = confirm("Vous avez commencé à remplir le formulaire. Quitter sans enregistrer ?");
+        if(!ok) return;
+      }
+      // Retour vers l'accueil (fallback historique)
+      try{
+        window.location.href = "index.html";
+      }catch(e){
+        history.back();
+      }
+    }
+    $("btnBack").addEventListener("click", goBack);
+
+    // Boutons existants
+    $("btnPrint").addEventListener("click", () => window.print());
+    $("btnReset").addEventListener("click", () => location.reload());
+
+    function safeName(s){
+      return String(s||"")
+        .trim()
+        .replace(/[^\p{L}\p{N}\- ]/gu,"")
+        .replace(/\s+/g,"_");
+    }
+
+    function generatePdf(){
+      try{
+        if(!window.jspdf || !window.jspdf.jsPDF) throw new Error("jsPDF non chargé");
+
+        const required = ["nom","prenom","club","email","intitule","lieu","d1","d2"];
+        for(const id of required){
+          const el = $(id);
+          if(!el.value){ el.focus(); alert("Merci de compléter les champs obligatoires (*) avant de générer le PDF."); return; }
+        }
+
+        const now = new Date();
+        const jj = String(now.getDate()).padStart(2,"0");
+        const mm2 = String(now.getMonth()+1).padStart(2,"0");
+        const aaaa = now.getFullYear();
+        const dateAujourdhui = `${jj}/${mm2}/${aaaa}`;
+
+        const fmtDate = (v) => {
+          if(!v) return "—";
+          const [y,m,d] = v.split("-");
+          return `${d}/${m}/${y}`;
+        };
+
+        const km   = Number($("km").value)||0;
+        const peage = Number($("peage").value)||0;
+        const hotel = Number($("hotel").value)||0;
+        const resto = Number($("resto").value)||0;
+        const autres= Number($("autres").value)||0;
+        const totalKm = km * TAUX_KM;
+        const totalGen = totalKm + peage + hotel + resto + autres;
+        const eur2 = (v) => Number(v).toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " €";
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF("p","mm","a4");
+        const W = 210; const ML = 14; const MR = 14; const CW = W - ML - MR;
+        let y = 14;
+
+        // ── Bannière verte ──
+        pdf.setFillColor(26,166,106);
+        pdf.roundedRect(ML, y, CW, 22, 3, 3, "F");
+        pdf.setTextColor(255,255,255);
+        pdf.setFont("helvetica","bold"); pdf.setFontSize(13);
+        pdf.text("Demande de remboursement — Mission Arbitre", ML+5, y+9);
+        pdf.setFont("helvetica","normal"); pdf.setFontSize(9);
+        pdf.text("Comité Départemental de Tir — Hérault (34)", ML+5, y+16);
+        y += 28;
+
+        // ── Helper : section ──
+        const section = (num, title) => {
+          pdf.setFillColor(234,250,242);
+          pdf.roundedRect(ML, y, CW, 8, 2, 2, "F");
+          pdf.setDrawColor(26,166,106); pdf.setLineWidth(0.3);
+          pdf.roundedRect(ML, y, CW, 8, 2, 2, "S");
+          pdf.setFillColor(26,166,106);
+          pdf.roundedRect(ML+2, y+1.5, 7, 5, 1, 1, "F");
+          pdf.setTextColor(255,255,255); pdf.setFont("helvetica","bold"); pdf.setFontSize(9);
+          pdf.text(String(num), ML+5.5, y+5.3, {align:"center"});
+          pdf.setTextColor(13,92,62); pdf.setFontSize(10);
+          pdf.text(title, ML+12, y+5.5);
+          y += 12;
+        };
+
+        // ── Helper : champ ──
+        const field = (label, value, x2, w2) => {
+          pdf.setTextColor(80,80,100); pdf.setFont("helvetica","bold"); pdf.setFontSize(8);
+          pdf.text(label, x2, y);
+          pdf.setFillColor(250,251,253); pdf.setDrawColor(220,225,235); pdf.setLineWidth(0.2);
+          pdf.roundedRect(x2, y+1.5, w2, 7, 1.5, 1.5, "FD");
+          pdf.setTextColor(15,18,34); pdf.setFont("helvetica","normal"); pdf.setFontSize(9);
+          pdf.text(value||"—", x2+3, y+6.5);
+        };
+
+        const row2 = (l1,v1,l2,v2) => { field(l1,v1,ML,CW/2-3); field(l2,v2,ML+CW/2+3,CW/2-3); y+=13; };
+        const row1 = (l1,v1) => { field(l1,v1,ML,CW); y+=13; };
+
+        // ── 1) Identité ──
+        section(1,"Identité");
+        row2("Nom", $("nom").value, "Prénom", $("prenom").value);
+        row2("Club", $("club").value, "N° licence", $("licence").value);
+        row2("Email", $("email").value, "Téléphone", $("tel").value);
+
+        // ── 2) Mission ──
+        section(2,"Mission");
+        row1("Intitulé mission / compétition", $("intitule").value);
+        row2("Lieu", $("lieu").value, "Aller / retour", $("ar").value);
+        row2("Date début", fmtDate($("d1").value), "Date fin", fmtDate($("d2").value));
+
+        // ── 3) Frais ──
+        section(3,"Frais à rembourser");
+        row2("Distance (km)", km>0?km+" km":"—", "Taux kilométrique", "0,40 €/km");
+        row2("Péages (€)", eur2(peage), "Hôtel (€)", eur2(hotel));
+        row2("Restaurant (€)", eur2(resto), "Autres (€)", eur2(autres));
+
+        // KPI totaux
+        const kpiY = y;
+        pdf.setFillColor(234,250,242); pdf.setDrawColor(26,166,106); pdf.setLineWidth(0.3);
+        pdf.roundedRect(ML, kpiY, CW/2-3, 14, 2, 2, "FD");
+        pdf.roundedRect(ML+CW/2+3, kpiY, CW/2-3, 14, 2, 2, "FD");
+        pdf.setTextColor(36,68,85); pdf.setFont("helvetica","bold"); pdf.setFontSize(8);
+        pdf.text("Total KM (km × 0,40)", ML+4, kpiY+5);
+        pdf.text("Total général", ML+CW/2+7, kpiY+5);
+        pdf.setTextColor(26,166,106); pdf.setFont("helvetica","bold"); pdf.setFontSize(12);
+        pdf.text(km>0?eur2(totalKm):"—", ML+4, kpiY+12);
+        pdf.text(eur2(totalGen), ML+CW/2+7, kpiY+12);
+        y = kpiY + 20;
+
+        // Attestation
+        const att = $("atteste").checked;
+        pdf.setFillColor(att?234:255, att?250:234, att?242:234);
+        pdf.setDrawColor(att?26:180,att?166:180,att?106:180); pdf.setLineWidth(0.3);
+        pdf.roundedRect(ML, y, CW, 10, 2, 2, "FD");
+        pdf.setTextColor(att?13:120,att?92:120,att?62:120);
+        pdf.setFont("helvetica","bold"); pdf.setFontSize(9);
+        pdf.text((att?"☑":"☐") + "  J'atteste sur l'honneur l'exactitude de mes déclarations.", ML+5, y+6.5);
+        y += 16;
+
+        // Signature trésorier
+        pdf.setDrawColor(232,236,243); pdf.setLineWidth(0.3);
+        pdf.line(ML, y, ML+CW, y); y += 6;
+        pdf.setTextColor(34,34,51); pdf.setFont("helvetica","bold"); pdf.setFontSize(9);
+        pdf.text("Signature du trésorier", ML, y); y += 5;
+        pdf.setFont("helvetica","normal"); pdf.setFontSize(8); pdf.setTextColor(80,80,100);
+        pdf.text(`Fait à ${FAIT_A}, le ${dateAujourdhui}`, ML, y); y += 6;
+        const sw = CW/2-4;
+        pdf.setDrawColor(220,225,235); pdf.setLineWidth(0.2);
+        pdf.roundedRect(ML, y, sw, 18, 1.5, 1.5, "S");
+        pdf.roundedRect(ML+sw+8, y, sw, 18, 1.5, 1.5, "S");
+        pdf.setTextColor(80,80,100); pdf.setFontSize(8);
+        pdf.text("Nom : ____________________", ML+3, y+6);
+        pdf.text("Date : ___ / ___ / ______", ML+3, y+13);
+        pdf.text("Signature :", ML+sw+11, y+6);
+
+        const filename = `Remboursement_Arbitre_${safeName($("nom").value)}_${safeName($("prenom").value)}.pdf`;
+        pdf.save(filename);
+
+      }catch(err){
+        console.error(err);
+        alert("Erreur PDF : " + (err?.message || err));
+      }
+    }
+
+    $("btnPdf").addEventListener("click", generatePdf);
+  </script>
+</body>
+</html>
