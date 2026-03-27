@@ -17,12 +17,12 @@
       --line:#e8ecf3;
 
       /* Arbitres - Couleurs identiques */
-      --brand:#1aa66a;
-      --brand2:#2fcf8f;
-      --soft:#eafaf2;
+      --brand:#00b4d8;
+      --brand2:#48cae4;
+      --soft:#e0f9ff;
 
       --shadow: 0 10px 30px rgba(16,24,40,.08);
-      --shadow-lg: 0 20px 50px rgba(26,166,106,.15);
+      --shadow-lg: 0 20px 50px rgba(0,180,216,.18);
       --radius:18px;
       --radius2:22px;
     }
@@ -140,7 +140,7 @@
       gap:12px;
       padding:14px 16px;
       border-radius:16px;
-      background:linear-gradient(135deg, rgba(26,166,106,.92), rgba(47,207,143,.92));
+      background:linear-gradient(135deg, rgba(0,180,216,.92), rgba(72,202,228,.92));
       color:#fff;
       margin-bottom: 16px;
     }
@@ -177,8 +177,8 @@
       transition: all 0.3s ease;
     }
     .section:hover{
-      border-color: rgba(26,166,106,.3);
-      box-shadow: 0 5px 15px rgba(26,166,106,.08);
+      border-color: rgba(0,180,216,.3);
+      box-shadow: 0 5px 15px rgba(0,180,216,.08);
     }
     .section h2{
       margin:0 0 16px;
@@ -197,11 +197,11 @@
       justify-content:center;
       font-weight:800;
       background:var(--soft);
-      border:1.5px solid rgba(26,166,106,.25);
-      color:#0d5c3e;
+      border:1.5px solid rgba(0,180,216,.25);
+      color:#006080;
       flex:0 0 auto;
       font-size:15px;
-      box-shadow: 0 2px 8px rgba(26,166,106,.1);
+      box-shadow: 0 2px 8px rgba(0,180,216,.1);
     }
 
     .row{
@@ -239,11 +239,11 @@
       font-family: inherit;
     }
     input:hover, select:hover{
-      border-color: rgba(26,166,106,.35);
+      border-color: rgba(0,180,216,.35);
     }
     input:focus, select:focus{
       border-color:var(--brand);
-      box-shadow:0 0 0 4px rgba(26,166,106,.15);
+      box-shadow:0 0 0 4px rgba(0,180,216,.15);
       transform: translateY(-1px);
     }
 
@@ -270,7 +270,7 @@
       margin-top:16px;
     }
     .kpi{
-      border:1.5px solid rgba(26,166,106,.25);
+      border:1.5px solid rgba(0,180,216,.25);
       background:linear-gradient(135deg, rgba(234,250,242,1), rgba(255,255,255,1));
       border-radius:16px;
       padding:14px 16px;
@@ -731,7 +731,7 @@
         let y = 14;
 
         // ── Bannière verte ──
-        pdf.setFillColor(26,166,106);
+        pdf.setFillColor(0,180,216);
         pdf.roundedRect(ML, y, CW, 22, 3, 3, "F");
         pdf.setTextColor(255,255,255);
         pdf.setFont("helvetica","bold"); pdf.setFontSize(13);
@@ -742,15 +742,15 @@
 
         // ── Helper : section ──
         const section = (num, title) => {
-          pdf.setFillColor(234,250,242);
+          pdf.setFillColor(224,249,255);
           pdf.roundedRect(ML, y, CW, 8, 2, 2, "F");
-          pdf.setDrawColor(26,166,106); pdf.setLineWidth(0.3);
+          pdf.setDrawColor(0,180,216); pdf.setLineWidth(0.3);
           pdf.roundedRect(ML, y, CW, 8, 2, 2, "S");
-          pdf.setFillColor(26,166,106);
+          pdf.setFillColor(0,180,216);
           pdf.roundedRect(ML+2, y+1.5, 7, 5, 1, 1, "F");
           pdf.setTextColor(255,255,255); pdf.setFont("helvetica","bold"); pdf.setFontSize(9);
           pdf.text(String(num), ML+5.5, y+5.3, {align:"center"});
-          pdf.setTextColor(13,92,62); pdf.setFontSize(10);
+          pdf.setTextColor(0,80,110); pdf.setFontSize(10);
           pdf.text(title, ML+12, y+5.5);
           y += 12;
         };
@@ -788,13 +788,13 @@
 
         // KPI totaux
         const kpiY = y;
-        pdf.setFillColor(234,250,242); pdf.setDrawColor(26,166,106); pdf.setLineWidth(0.3);
+        pdf.setFillColor(224,249,255); pdf.setDrawColor(0,180,216); pdf.setLineWidth(0.3);
         pdf.roundedRect(ML, kpiY, CW/2-3, 14, 2, 2, "FD");
         pdf.roundedRect(ML+CW/2+3, kpiY, CW/2-3, 14, 2, 2, "FD");
         pdf.setTextColor(36,68,85); pdf.setFont("helvetica","bold"); pdf.setFontSize(8);
         pdf.text("Total KM (km × 0,40)", ML+4, kpiY+5);
         pdf.text("Total général", ML+CW/2+7, kpiY+5);
-        pdf.setTextColor(26,166,106); pdf.setFont("helvetica","bold"); pdf.setFontSize(12);
+        pdf.setTextColor(0,150,199); pdf.setFont("helvetica","bold"); pdf.setFontSize(12);
         pdf.text(km>0?eur2(totalKm):"—", ML+4, kpiY+12);
         pdf.text(eur2(totalGen), ML+CW/2+7, kpiY+12);
         y = kpiY + 20;

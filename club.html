@@ -14,12 +14,12 @@
       --line:#e8ecf3;
 
       /* Thème Club (mauve) */
-      --brand:#7b2cff;
-      --brand2:#b33bff;
-      --soft:#f3eaff;
+      --brand:#0077b6;
+      --brand2:#023e8a;
+      --soft:#e0f0ff;
 
       --shadow: 0 10px 30px rgba(16,24,40,.08);
-      --shadow-lg: 0 20px 50px rgba(123,44,255,.15);
+      --shadow-lg: 0 20px 50px rgba(0,119,182,.18);
       --radius: 16px;
       --radius2: 22px;
     }
@@ -155,7 +155,7 @@
       align-items:center;
       justify-content:space-between;
       gap:12px;
-      background: linear-gradient(180deg, rgba(123,44,255,.12), rgba(123,44,255,.04));
+      background: linear-gradient(180deg, rgba(0,119,182,.12), rgba(0,119,182,.04));
       position: relative;
     }
     .card .head::after{
@@ -215,11 +215,11 @@
       font-family: inherit;
     }
     input:hover, textarea:hover{
-      border-color: rgba(123,44,255,.35);
+      border-color: rgba(0,119,182,.35);
     }
     input:focus, textarea:focus{
       border-color: var(--brand);
-      box-shadow: 0 0 0 4px rgba(123,44,255,.15);
+      box-shadow: 0 0 0 4px rgba(0,119,182,.15);
       transform: translateY(-1px);
     }
     textarea{
@@ -323,7 +323,7 @@
       transition: all 0.2s ease;
     }
     .breakdown-row:hover{
-      background: rgba(123,44,255,.12);
+      background: rgba(0,119,182,.12);
       transform: translateX(2px);
     }
     .breakdown-row .bl{
@@ -476,7 +476,7 @@
       margin-bottom:16px;
     }
     .pdf-card .hd{
-      background: linear-gradient(135deg, rgba(123,44,255,.12), rgba(123,44,255,.06));
+      background: linear-gradient(135deg, rgba(0,119,182,.12), rgba(123,44,255,.06));
       padding:14px 18px;
       font-size:13px;
       font-weight:700;
@@ -528,7 +528,7 @@
       font-size:12px;
       font-weight:600;
       color:#55607a;
-      background: rgba(123,44,255,.04);
+      background: rgba(0,119,182,.04);
       min-height:80px;
     }
     .pdf-footer{
@@ -1016,7 +1016,7 @@
         let y = 14;
 
         // ── Bannière violette ──
-        pdf.setFillColor(123,44,255);
+        pdf.setFillColor(0,119,182);
         pdf.roundedRect(ML, y, CW, 22, 3, 3, "F");
         pdf.setTextColor(255,255,255);
         pdf.setFont("helvetica","bold"); pdf.setFontSize(12);
@@ -1026,15 +1026,15 @@
         y += 28;
 
         const section = (num, title) => {
-          pdf.setFillColor(245,238,255);
+          pdf.setFillColor(224,240,255);
           pdf.roundedRect(ML, y, CW, 8, 2, 2, "F");
-          pdf.setDrawColor(123,44,255); pdf.setLineWidth(0.3);
+          pdf.setDrawColor(0,119,182); pdf.setLineWidth(0.3);
           pdf.roundedRect(ML, y, CW, 8, 2, 2, "S");
-          pdf.setFillColor(123,44,255);
+          pdf.setFillColor(0,119,182);
           pdf.roundedRect(ML+2, y+1.5, 7, 5, 1, 1, "F");
           pdf.setTextColor(255,255,255); pdf.setFont("helvetica","bold"); pdf.setFontSize(9);
           pdf.text(String(num), ML+5.5, y+5.3, {align:"center"});
-          pdf.setTextColor(60,10,120); pdf.setFontSize(10);
+          pdf.setTextColor(0,50,100); pdf.setFontSize(10);
           pdf.text(title, ML+12, y+5.5);
           y += 12;
         };
@@ -1042,7 +1042,7 @@
         const field = (label, value, x2, w2) => {
           pdf.setTextColor(80,80,100); pdf.setFont("helvetica","bold"); pdf.setFontSize(8);
           pdf.text(label, x2, y);
-          pdf.setFillColor(250,248,255); pdf.setDrawColor(210,200,235); pdf.setLineWidth(0.2);
+          pdf.setFillColor(240,248,255); pdf.setDrawColor(210,200,235); pdf.setLineWidth(0.2);
           pdf.roundedRect(x2, y+1.5, w2, 7, 1.5, 1.5, "FD");
           pdf.setTextColor(15,18,34); pdf.setFont("helvetica","normal"); pdf.setFontSize(9);
           const txt = String(value||"—");
@@ -1073,20 +1073,20 @@
 
         // Total
         const kpiY = y;
-        pdf.setFillColor(245,238,255); pdf.setDrawColor(123,44,255); pdf.setLineWidth(0.4);
+        pdf.setFillColor(224,240,255); pdf.setDrawColor(0,119,182); pdf.setLineWidth(0.4);
         pdf.roundedRect(ML, kpiY, CW, 14, 2, 2, "FD");
-        pdf.setTextColor(60,10,120); pdf.setFont("helvetica","bold"); pdf.setFontSize(9);
+        pdf.setTextColor(0,50,100); pdf.setFont("helvetica","bold"); pdf.setFontSize(9);
         pdf.text("TOTAL DE LA DEMANDE", ML+5, kpiY+6);
-        pdf.setTextColor(123,44,255); pdf.setFont("helvetica","bold"); pdf.setFontSize(16);
+        pdf.setTextColor(0,90,150); pdf.setFont("helvetica","bold"); pdf.setFontSize(16);
         pdf.text(eur2(s.total), ML+CW-5, kpiY+10, {align:"right"});
         y = kpiY + 20;
 
         // Attestation
         const att = fields.attest.checked;
         pdf.setFillColor(att?245:255, att?238:240, att?255:255);
-        pdf.setDrawColor(att?123:180, att?44:180, att?255:180); pdf.setLineWidth(0.3);
+        pdf.setDrawColor(att?0:180, att?119:180, att?182:180); pdf.setLineWidth(0.3);
         pdf.roundedRect(ML, y, CW, 10, 2, 2, "FD");
-        pdf.setTextColor(att?60:120, att?10:120, att?120:120);
+        pdf.setTextColor(att?0:120, att?60:120, att?100:120);
         pdf.setFont("helvetica","bold"); pdf.setFontSize(9);
         pdf.text((att?"☑":"☐") + "  Le président du club atteste sur l'honneur l'exactitude de cette demande.", ML+5, y+6.5);
         y += 16;
