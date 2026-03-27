@@ -17,22 +17,22 @@
       --radius: 18px;
       --radius2: 24px;
 
-      /* ✅ Couleur Mauve CLUB */
-      --club:#7b2cff;
-      --club2:#b33bff;
-      --club-soft:#f3eaff;
+      /* 🩵 Club (lagon profond) */
+      --club:#0077b6;
+      --club2:#023e8a;
+      --club-soft:#e0f4ff;
 
-      /* 🟢 Arbitres (vert) */
-      --arb:#1aa66a;
-      --arb2:#2fcf8f;
+      /* 🌊 Arbitres (turquoise vif) */
+      --arb:#00b4d8;
+      --arb2:#48cae4;
 
-      /* 🔵 Comité (bleu) */
-      --com:#1b5cff;
-      --com2:#00c2ff;
+      /* 🫧 Comité (cyan océan) */
+      --com:#0096c7;
+      --com2:#00b4d8;
       
-      /* 🟠 Divers */
-      --div:#ff8a00;
-      --div2:#ffb000;
+      /* 🌿 Divers (vert-mer) */
+      --div:#06d6a0;
+      --div2:#00c9c8;
     }
 
     *{box-sizing:border-box}
@@ -63,11 +63,11 @@
 
     .hero{
       background: linear-gradient(135deg, 
-        rgba(26,166,106,.25) 0%,
-        rgba(27,92,255,.25) 25%,
-        rgba(123,44,255,.25) 50%,
-        rgba(242,162,58,.25) 75%,
-        rgba(26,166,106,.25) 100%
+        rgba(0,180,216,.25) 0%,
+        rgba(0,150,199,.25) 25%,
+        rgba(0,119,182,.25) 50%,
+        rgba(6,214,160,.20) 75%,
+        rgba(0,201,200,.20) 100%
       );
       border:1.5px solid var(--line);
       border-radius: var(--radius2);
@@ -84,9 +84,9 @@
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
       background: 
-        radial-gradient(circle at 10% 20%, rgba(26,166,106,.18) 0%, transparent 30%),
-        radial-gradient(circle at 50% 50%, rgba(27,92,255,.15) 0%, transparent 35%),
-        radial-gradient(circle at 90% 80%, rgba(242,162,58,.18) 0%, transparent 30%);
+        radial-gradient(circle at 10% 20%, rgba(0,180,216,.18) 0%, transparent 30%),
+        radial-gradient(circle at 50% 50%, rgba(0,119,182,.15) 0%, transparent 35%),
+        radial-gradient(circle at 90% 80%, rgba(6,214,160,.18) 0%, transparent 30%);
       pointer-events: none;
     }
     .hero::after{
@@ -239,7 +239,7 @@
       background: radial-gradient(circle, rgba(255,255,255,.15) 0%, transparent 70%);
       pointer-events: none;
     }
-    .tile-arb:hover{ box-shadow: 0 20px 40px rgba(27,92,255,.3); }
+    .tile-arb:hover{ box-shadow: 0 20px 40px rgba(0,180,216,.35); }
 
     .tile-com{ background: linear-gradient(135deg, var(--com), var(--com2)); }
     .tile-com::after{
@@ -250,7 +250,7 @@
       background: radial-gradient(circle, rgba(255,255,255,.15) 0%, transparent 70%);
       pointer-events: none;
     }
-    .tile-com:hover{ box-shadow: 0 20px 40px rgba(26,166,106,.3); }
+    .tile-com:hover{ box-shadow: 0 20px 40px rgba(0,150,199,.35); }
 
     .tile-div{ background: linear-gradient(135deg, var(--div), var(--div2)); }
     .tile-div::after{
@@ -261,7 +261,7 @@
       background: radial-gradient(circle, rgba(255,255,255,.15) 0%, transparent 70%);
       pointer-events: none;
     }
-    .tile-div:hover{ box-shadow: 0 20px 40px rgba(255,138,0,.3); }
+    .tile-div:hover{ box-shadow: 0 20px 40px rgba(6,214,160,.35); }
 
     .tile-club{ background: linear-gradient(135deg, var(--club), var(--club2)); }
     .tile-club::after{
@@ -272,7 +272,7 @@
       background: radial-gradient(circle, rgba(255,255,255,.15) 0%, transparent 70%);
       pointer-events: none;
     }
-    .tile-club:hover{ box-shadow: 0 20px 40px rgba(123,44,255,.35); }
+    .tile-club:hover{ box-shadow: 0 20px 40px rgba(0,119,182,.35); }
 
     .footer{
       margin-top:32px;
