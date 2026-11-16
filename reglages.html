@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CD Tir 34 — Tarifs des formulaires</title>
+<title>CD Tir 34 — Réglage des tarifs</title>
 <meta name="robots" content="noindex">
 <style>
   :root{--bg:#f6f7fb;--txt:#0f1222;--muted:#55607a;--line:#e8ecf3;--brand:#0077b6;--brand2:#00b4d8;--soft:#e0f4ff}
@@ -40,6 +40,13 @@
   td.v{text-align:right;font-weight:800;color:var(--brand);white-space:nowrap}
   tr:last-child td{border-bottom:none}
   .src{font-size:12.5px;margin-top:10px;font-weight:600}
+  .lock{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+  .lock > div{flex:1;min-width:200px}
+  input[type=password], input.txt{padding-right:13px}
+  fieldset{border:0;padding:0;margin:0}
+  fieldset:disabled input{background:#f3f5f9;color:#55607a}
+  .info{font-size:12.5px;color:var(--muted);margin-top:8px}
+  button:disabled{opacity:.55;cursor:not-allowed}
 </style>
 <script src="tarifs.js"></script>
 </head>
@@ -48,58 +55,122 @@
   <header class="hero">
     <img src="logo_34.jpg" alt="CD Tir 34">
     <div>
-      <h1>Tarifs des formulaires</h1>
-      <p>Les tarifs se modifient dans une feuille Google Sheets, sans toucher au site.</p>
+      <h1>Réglage des tarifs</h1>
+      <p>Modifiez les montants puis enregistrez : les 4 formulaires sont mis à jour aussitôt.</p>
     </div>
   </header>
 
   <div class="card">
-    <h2>📋 Tarifs actuellement appliqués</h2>
+    <h2>🔒 Accès</h2>
     <div class="body">
-      <table>
-        <tr><td>Taux kilométrique (Arbitre / Comité / Divers)</td><td class="v" id="v_km">…</td></tr>
-        <tr><td>Ville du « Fait à » sur les PDF</td><td class="v" id="v_fait_a">…</td></tr>
-        <tr><td>Club : par journée d'organisation</td><td class="v" id="v_club_journee">…</td></tr>
-        <tr><td>Club : par tir</td><td class="v" id="v_club_tir">…</td></tr>
-        <tr><td>Club : par repas arbitre</td><td class="v" id="v_club_repas">…</td></tr>
-        <tr><td>Club : forfait moment de convivialité</td><td class="v" id="v_club_convivialite">…</td></tr>
-      </table>
-      <div class="src" id="src">Lecture de la feuille…</div>
+      <div class="lock">
+        <div><label>Mot de passe</label><input id="pwd" type="password" autocomplete="current-password" placeholder="Mot de passe du comité"></div>
+        <div><label>Votre nom (pour l'historique)</label><input id="nom" class="txt" type="text" placeholder="Ex : J. Dupont"></div>
+      </div>
+      <div class="info" id="src">Lecture des tarifs en cours…</div>
     </div>
   </div>
+
+  <fieldset id="fs" disabled>
+  <div class="card">
+    <h2>🚗 Formulaires Arbitre / Comité / Divers</h2>
+    <div class="body">
+      <div class="row">
+        <div><label>Taux kilométrique</label><div class="in"><input id="km" type="number" step="0.01" min="0"><span>€/km</span></div><div class="was" id="w_km"></div></div>
+        <div><label>Ville du « Fait à … » (PDF)</label><input id="fait_a" class="txt" type="text"><div class="was" id="w_fait_a"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🏟️ Formulaire Club (organisation compétition départementale)</h2>
+    <div class="body">
+      <div class="row">
+        <div><label>Par journée d'organisation</label><div class="in"><input id="club_journee" type="number" step="0.01" min="0"><span>€</span></div><div class="was" id="w_club_journee"></div></div>
+        <div><label>Par tir</label><div class="in"><input id="club_tir" type="number" step="0.01" min="0"><span>€</span></div><div class="was" id="w_club_tir"></div></div>
+      </div>
+      <div class="row">
+        <div><label>Par repas arbitre</label><div class="in"><input id="club_repas" type="number" step="0.01" min="0"><span>€</span></div><div class="was" id="w_club_repas"></div></div>
+        <div><label>Forfait moment de convivialité</label><div class="in"><input id="club_convivialite" type="number" step="0.01" min="0"><span>€</span></div><div class="was" id="w_club_convivialite"></div></div>
+      </div>
+    </div>
+  </div>
+  </fieldset>
 
   <div class="actions">
-    <a class="btn primary" id="btnSheet" href="#" target="_blank" rel="noopener">✏️ Modifier les tarifs (Google Sheets)</a>
-    <button class="light" type="button" onclick="location.reload()">↻ Actualiser</button>
+    <button class="primary" id="btnSave" type="button" disabled>💾 Enregistrer les tarifs</button>
+    <button class="light" id="btnReset" type="button">↺ Annuler mes changements</button>
     <a class="btn light" href="index.html">← Accueil</a>
   </div>
-
-  <div class="card"><div class="body">
-    <div class="steps">
-      <b>Changer un tarif</b>
-      <ol>
-        <li>Cliquez sur <b>Modifier les tarifs</b> (il faut être connecté avec un compte Google autorisé à modifier la feuille).</li>
-        <li>Changez le montant dans la colonne <b>Valeur</b> uniquement. Ne touchez pas à la colonne <b>Code</b>.</li>
-        <li>C'est tout : Google enregistre tout seul. Les formulaires prennent les nouveaux tarifs dès qu'on les ouvre ou qu'on actualise la page.</li>
-      </ol>
-      <div style="margin-top:8px;font-size:12.5px;color:var(--muted)">Décimales : la virgule ou le point conviennent (0,45 ou 0.45).</div>
-    </div>
-  </div></div>
+  <div class="ok" id="ok"></div>
+  <div class="err" id="err"></div>
 </div>
 
 <script>
+  const KEYS = ["km","fait_a","club_journee","club_tir","club_repas","club_convivialite"];
   const $ = id => document.getElementById(id);
-  const fr = v => Number(v).toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2});
-  $("btnSheet").href = window.TARIFS_SHEET_URL;
-  (window.TARIFS_READY || Promise.resolve(window.TARIFS)).then(T => {
-    $("v_km").textContent = fr(T.km) + " €/km";
-    $("v_fait_a").textContent = T.fait_a;
-    ["club_journee","club_tir","club_repas","club_convivialite"].forEach(k => $("v_"+k).textContent = fr(T[k]) + " €");
-    if (window.TARIFS_SOURCE === "feuille"){
-      $("src").textContent = "✅ Tarifs lus dans la feuille Google Sheets.";
+  const fr = v => typeof v === "number" ? v.toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2}) : v;
+  let CUR = {};
+  const online = /^https:\/\/script\.google\.com\//.test(window.TARIFS_API || "");
+
+  function show(id, msg){ ["ok","err"].forEach(x => $(x).style.display = "none"); if(msg){ $(id).innerHTML = msg; $(id).style.display = "block"; } }
+
+  function fill(t){
+    CUR = Object.assign({}, t);
+    KEYS.forEach(k => {
+      $(k).value = CUR[k];
+      $(k).classList.remove("changed");
+      $("w_"+k).textContent = "En vigueur : " + fr(CUR[k]) + (k==="km" ? " €/km" : k==="fait_a" ? "" : " €");
+    });
+  }
+  function changed(){ return KEYS.some(k => String($(k).value).replace(",",".") !== String(CUR[k])); }
+  function refreshBtn(){ $("btnSave").disabled = !online || !$("pwd").value || !changed(); }
+
+  KEYS.forEach(k => $(k).addEventListener("input", () => {
+    $(k).classList.toggle("changed", String($(k).value).replace(",",".") !== String(CUR[k]));
+    refreshBtn();
+  }));
+  $("pwd").addEventListener("input", () => { $("fs").disabled = !online || !$("pwd").value; refreshBtn(); });
+  $("btnReset").addEventListener("click", () => { fill(CUR); show(); refreshBtn(); });
+
+  $("btnSave").addEventListener("click", async () => {
+    show();
+    const tarifs = {};
+    for (const k of KEYS){
+      if (k === "fait_a"){
+        const v = $(k).value.trim();
+        if (!v) return show("err","Merci d'indiquer la ville du « Fait à ».");
+        tarifs[k] = v; continue;
+      }
+      const x = Number(String($(k).value).replace(",", "."));
+      if ($(k).value === "" || !Number.isFinite(x) || x < 0){ $(k).focus(); return show("err","Montant invalide : merci de vérifier les champs surlignés."); }
+      tarifs[k] = Math.round(x*100)/100;
+    }
+    $("btnSave").disabled = true; $("btnSave").textContent = "⏳ Enregistrement…";
+    try{
+      const r = await fetch(window.TARIFS_API, { method:"POST", body: JSON.stringify({ motDePasse: $("pwd").value, nom: $("nom").value, tarifs }) });
+      const d = await r.json();
+      if (!d.ok) throw new Error(d.erreur || "Erreur inconnue");
+      window.TARIFS_APPLY(d.tarifs); fill(window.TARIFS);
+      $("src").textContent = "✅ Tarifs à jour" + (d.maj ? " (dernière modification le " + d.maj + ")" : "") + ".";
+      show("ok", d.nbChangements ? "✅ Tarifs enregistrés. Les formulaires utilisent les nouveaux montants dès leur prochaine ouverture." : "Aucun changement à enregistrer.");
+    }catch(e){
+      show("err", "❌ " + (e.message === "Failed to fetch" ? "Impossible de joindre Google. Vérifiez la connexion internet." : e.message));
+    }finally{
+      $("btnSave").textContent = "💾 Enregistrer les tarifs"; refreshBtn();
+    }
+  });
+
+  window.TARIFS_READY.then(T => {
+    fill(T);
+    if (!online){
+      $("src").innerHTML = "⚠️ Le site n'est pas encore relié au script Google : enregistrement impossible pour l'instant.";
+      $("src").style.color = "#991b1b";
+    } else if (window.TARIFS_SOURCE === "google"){
+      $("src").textContent = "✅ Tarifs à jour" + (window.TARIFS_MAJ ? " (dernière modification le " + window.TARIFS_MAJ + ")" : "") + ". Saisissez le mot de passe pour les modifier.";
       $("src").style.color = "#14532d";
     } else {
-      $("src").textContent = "⚠️ Feuille Google injoignable : ce sont les tarifs de secours qui s'appliquent. Vérifiez que la feuille est partagée « Tous les utilisateurs disposant du lien ».";
+      $("src").textContent = "⚠️ Google injoignable : les montants affichés sont les tarifs de secours. Réessayez plus tard.";
       $("src").style.color = "#991b1b";
     }
   });

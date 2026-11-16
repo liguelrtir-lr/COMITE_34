@@ -1,15 +1,16 @@
 /* =========================================================
    CD Tir 34 — TARIFS DES FORMULAIRES
    ---------------------------------------------------------
-   Les tarifs se modifient dans la feuille Google Sheets
-   "CD Tir 34 — Tarifs des formulaires" (lien ci-dessous).
-   Les formulaires la relisent à chaque ouverture.
+   Les tarifs se modifient sur la page reglages.html
+   (protégée par mot de passe). Ils sont stockés dans une
+   feuille Google et relus à chaque ouverture des formulaires.
 
-   Les valeurs ci-dessous ne servent QUE de secours si la
-   feuille est injoignable (pas d'internet, feuille non partagée…).
+   Les valeurs ci-dessous ne servent QUE de secours si Google
+   est injoignable.
    ========================================================= */
-window.TARIFS_SHEET_ID = "1sexuKtZgbiZq5gHDddIhmzes05AwLbTjY2rQ9dk0KYI";
-window.TARIFS_SHEET_URL = "https://docs.google.com/spreadsheets/d/" + window.TARIFS_SHEET_ID + "/edit";
+
+// Adresse du script Google (Déployer > Application Web) — à renseigner une seule fois
+window.TARIFS_API = "https://script.google.com/macros/s/AKfycbwIKBseLjw9H648gh3SFHm1He604BR81su4H4-RkNlLaywyGoLdHn0JIP5f4F3W2Kya/exec";
 
 window.TARIFS = {
   km: 0.40,
@@ -20,49 +21,34 @@ window.TARIFS = {
   club_convivialite: 50
 };
 window.TARIFS_SOURCE = "secours";
+window.TARIFS_MAJ = "";
 
-(function(){
-  function parseCsv(txt){
-    const rows = []; let row = [], cur = "", q = false;
-    for (let i = 0; i < txt.length; i++){
-      const c = txt[i];
-      if (q){
-        if (c === '"' && txt[i+1] === '"'){ cur += '"'; i++; }
-        else if (c === '"') q = false;
-        else cur += c;
-      } else if (c === '"') q = true;
-      else if (c === ","){ row.push(cur); cur = ""; }
-      else if (c === "\n" || c === "\r"){
-        if (c === "\r" && txt[i+1] === "\n") i++;
-        row.push(cur); rows.push(row); row = []; cur = "";
-      } else cur += c;
-    }
-    if (cur !== "" || row.length){ row.push(cur); rows.push(row); }
-    return rows;
+window.TARIFS_APPLY = function(t){
+  Object.keys(window.TARIFS).forEach(k => {
+    if (!(k in t)) return;
+    if (typeof window.TARIFS[k] === "number"){
+      const x = Number(String(t[k]).replace(",", "."));
+      if (Number.isFinite(x) && x >= 0) window.TARIFS[k] = x;
+    } else if (String(t[k]).trim()) window.TARIFS[k] = String(t[k]).trim();
+  });
+};
+
+window.TARIFS_READY = (function(){
+  if (!/^https:\/\/script\.google\.com\//.test(window.TARIFS_API)) {
+    console.warn("[Tarifs] Adresse du script non renseignée : tarifs de secours.");
+    return Promise.resolve(window.TARIFS);
   }
-
-  const url = "https://docs.google.com/spreadsheets/d/" + window.TARIFS_SHEET_ID +
-              "/gviz/tq?tqx=out:csv&headers=1&t=" + Date.now();
   const ctrl = ("AbortController" in window) ? new AbortController() : null;
-  const timer = setTimeout(() => ctrl && ctrl.abort(), 6000);
-
-  window.TARIFS_READY = fetch(url, { cache: "no-store", signal: ctrl ? ctrl.signal : undefined })
-    .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
-    .then(txt => {
-      if (/^\s*</.test(txt)) throw new Error("feuille non partagée");
-      let n = 0;
-      parseCsv(txt).forEach(cols => {
-        const code = (cols[2] || "").trim();
-        const val = (cols[1] || "").trim();
-        if (!code || !(code in window.TARIFS) || val === "") return;
-        if (typeof window.TARIFS[code] === "number"){
-          const x = Number(val.replace(/\s|€/g, "").replace(",", "."));
-          if (Number.isFinite(x) && x >= 0){ window.TARIFS[code] = x; n++; }
-        } else { window.TARIFS[code] = val; n++; }
-      });
-      if (n) window.TARIFS_SOURCE = "feuille";
+  const timer = setTimeout(() => ctrl && ctrl.abort(), 8000);
+  return fetch(window.TARIFS_API + "?t=" + Date.now(), { signal: ctrl ? ctrl.signal : undefined })
+    .then(r => r.json())
+    .then(d => {
+      if (!d || !d.ok || !d.tarifs) throw new Error("réponse invalide");
+      window.TARIFS_APPLY(d.tarifs);
+      window.TARIFS_SOURCE = "google";
+      window.TARIFS_MAJ = d.maj || "";
     })
-    .catch(err => console.warn("[Tarifs] Feuille Google injoignable, tarifs de secours utilisés :", err.message))
+    .catch(err => console.warn("[Tarifs] Google injoignable, tarifs de secours utilisés :", err.message))
     .finally(() => clearTimeout(timer))
     .then(() => window.TARIFS);
 })();
