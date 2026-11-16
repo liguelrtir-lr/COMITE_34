@@ -736,18 +736,22 @@
 
   <script src="tarifs.js"></script>
   <script>
-    const TARIFS = window.TARIFS || {};
-    const PRICE_DAY  = Number(TARIFS.club_journee ?? 50);
-    const PRICE_SHOT = Number(TARIFS.club_tir ?? 2);
-    const PRICE_MEAL = Number(TARIFS.club_repas ?? 25);
-    const PRICE_CONV = Number(TARIFS.club_convivialite ?? 50);
     const fr = (v) => Number(v).toLocaleString("fr-FR",{maximumFractionDigits:2});
-    const FIXES_TXT = `Fixes : ${fr(PRICE_DAY)}€ / ${fr(PRICE_SHOT)}€ / ${fr(PRICE_MEAL)}€ / ${fr(PRICE_CONV)}€`;
-    document.getElementById("fixesTxt").textContent = FIXES_TXT;
-    document.getElementById("hDay").textContent  = `${fr(PRICE_DAY)} € par journée`;
-    document.getElementById("hShot").textContent = `${fr(PRICE_SHOT)} € par tir`;
-    document.getElementById("hMeal").textContent = `${fr(PRICE_MEAL)} € par repas`;
-    document.getElementById("hConv").textContent = `Moment de convivialité (forfait ${fr(PRICE_CONV)} €)`;
+    let PRICE_DAY, PRICE_SHOT, PRICE_MEAL, PRICE_CONV, FIXES_TXT;
+    function applyTarifs(){
+      const T = window.TARIFS || {};
+      PRICE_DAY  = Number(T.club_journee ?? 50);
+      PRICE_SHOT = Number(T.club_tir ?? 2);
+      PRICE_MEAL = Number(T.club_repas ?? 25);
+      PRICE_CONV = Number(T.club_convivialite ?? 50);
+      FIXES_TXT = `Fixes : ${fr(PRICE_DAY)}€ / ${fr(PRICE_SHOT)}€ / ${fr(PRICE_MEAL)}€ / ${fr(PRICE_CONV)}€`;
+      document.getElementById("fixesTxt").textContent = FIXES_TXT;
+      document.getElementById("hDay").textContent  = `${fr(PRICE_DAY)} € par journée`;
+      document.getElementById("hShot").textContent = `${fr(PRICE_SHOT)} € par tir`;
+      document.getElementById("hMeal").textContent = `${fr(PRICE_MEAL)} € par repas`;
+      document.getElementById("hConv").textContent = `Moment de convivialité (forfait ${fr(PRICE_CONV)} €)`;
+      if (typeof compute === "function" && document.getElementById("totalBig")) compute();
+    }
 
     const $ = id => document.getElementById(id);
 
@@ -1129,6 +1133,8 @@
     fields.btnPdf.addEventListener("click", generatePdf);
 
     // Init
+    applyTarifs();
+    if (window.TARIFS_READY) window.TARIFS_READY.then(applyTarifs);
     setValidated(false);
     compute();
   </script>

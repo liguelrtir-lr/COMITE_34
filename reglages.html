@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CD Tir 34 — Réglage des tarifs</title>
+<title>CD Tir 34 — Tarifs des formulaires</title>
 <meta name="robots" content="noindex">
 <style>
   :root{--bg:#f6f7fb;--txt:#0f1222;--muted:#55607a;--line:#e8ecf3;--brand:#0077b6;--brand2:#00b4d8;--soft:#e0f4ff}
@@ -35,6 +35,11 @@
   .steps code{background:#fff;padding:1px 6px;border-radius:6px;font-weight:700}
   .ok{display:none;margin-top:14px;padding:12px 16px;border-radius:12px;background:#e8f8ef;border:1.5px solid #8fd6ab;color:#14532d;font-weight:600;font-size:14px}
   .err{display:none;margin-top:14px;padding:12px 16px;border-radius:12px;background:#fef2f2;border:1.5px solid #fca5a5;color:#991b1b;font-weight:600;font-size:14px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  td{padding:11px 4px;border-bottom:1px solid var(--line)}
+  td.v{text-align:right;font-weight:800;color:var(--brand);white-space:nowrap}
+  tr:last-child td{border-bottom:none}
+  .src{font-size:12.5px;margin-top:10px;font-weight:600}
 </style>
 <script src="tarifs.js"></script>
 </head>
@@ -43,124 +48,61 @@
   <header class="hero">
     <img src="logo_34.jpg" alt="CD Tir 34">
     <div>
-      <h1>Réglage des tarifs de base</h1>
-      <p>Modifiez les montants, téléchargez le fichier, puis déposez-le sur GitHub.</p>
+      <h1>Tarifs des formulaires</h1>
+      <p>Les tarifs se modifient dans une feuille Google Sheets, sans toucher au site.</p>
     </div>
   </header>
 
   <div class="card">
-    <h2>🚗 Formulaires Arbitre / Comité / Divers</h2>
+    <h2>📋 Tarifs actuellement appliqués</h2>
     <div class="body">
-      <div class="row">
-        <div><label>Taux kilométrique</label><div class="in"><input id="km" type="number" step="0.01" min="0"><span>€/km</span></div><div class="was" id="w_km"></div></div>
-        <div><label>Ville du « Fait à … » (PDF)</label><input id="fait_a" type="text" style="padding-right:13px"><div class="was" id="w_fait_a"></div></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>🏟️ Formulaire Club (organisation compétition départementale)</h2>
-    <div class="body">
-      <div class="row">
-        <div><label>Par journée d'organisation</label><div class="in"><input id="club_journee" type="number" step="0.01" min="0"><span>€</span></div><div class="was" id="w_club_journee"></div></div>
-        <div><label>Par tir</label><div class="in"><input id="club_tir" type="number" step="0.01" min="0"><span>€</span></div><div class="was" id="w_club_tir"></div></div>
-      </div>
-      <div class="row">
-        <div><label>Par repas arbitre</label><div class="in"><input id="club_repas" type="number" step="0.01" min="0"><span>€</span></div><div class="was" id="w_club_repas"></div></div>
-        <div><label>Forfait moment de convivialité</label><div class="in"><input id="club_convivialite" type="number" step="0.01" min="0"><span>€</span></div><div class="was" id="w_club_convivialite"></div></div>
-      </div>
+      <table>
+        <tr><td>Taux kilométrique (Arbitre / Comité / Divers)</td><td class="v" id="v_km">…</td></tr>
+        <tr><td>Ville du « Fait à » sur les PDF</td><td class="v" id="v_fait_a">…</td></tr>
+        <tr><td>Club : par journée d'organisation</td><td class="v" id="v_club_journee">…</td></tr>
+        <tr><td>Club : par tir</td><td class="v" id="v_club_tir">…</td></tr>
+        <tr><td>Club : par repas arbitre</td><td class="v" id="v_club_repas">…</td></tr>
+        <tr><td>Club : forfait moment de convivialité</td><td class="v" id="v_club_convivialite">…</td></tr>
+      </table>
+      <div class="src" id="src">Lecture de la feuille…</div>
     </div>
   </div>
 
   <div class="actions">
-    <button class="primary" id="btnDl" type="button">⬇️ Télécharger le nouveau fichier tarifs.js</button>
-    <button class="light" id="btnReset" type="button">↺ Revenir aux tarifs en ligne</button>
+    <a class="btn primary" id="btnSheet" href="#" target="_blank" rel="noopener">✏️ Modifier les tarifs (Google Sheets)</a>
+    <button class="light" type="button" onclick="location.reload()">↻ Actualiser</button>
     <a class="btn light" href="index.html">← Accueil</a>
   </div>
-  <div class="ok" id="ok">✅ Fichier <b>tarifs.js</b> téléchargé. Suivez maintenant les étapes ci-dessous pour le mettre en ligne.</div>
-  <div class="err" id="err"></div>
 
   <div class="card"><div class="body">
     <div class="steps">
-      <b>Mettre les nouveaux tarifs en ligne (2 minutes)</b>
+      <b>Changer un tarif</b>
       <ol>
-        <li>Cliquez sur <b>Télécharger le nouveau fichier tarifs.js</b> ci-dessus.</li>
-        <li>Ouvrez le dépôt GitHub <b>COMITE_34</b> → bouton <b>Add file</b> → <b>Upload files</b>.</li>
-        <li>Glissez le fichier <code>tarifs.js</code> téléchargé (il remplace l'ancien).</li>
-        <li>Cliquez sur <b>Commit changes</b>. Les formulaires utilisent les nouveaux tarifs après 1 à 2 minutes (actualiser la page).</li>
+        <li>Cliquez sur <b>Modifier les tarifs</b> (il faut être connecté avec un compte Google autorisé à modifier la feuille).</li>
+        <li>Changez le montant dans la colonne <b>Valeur</b> uniquement. Ne touchez pas à la colonne <b>Code</b>.</li>
+        <li>C'est tout : Google enregistre tout seul. Les formulaires prennent les nouveaux tarifs dès qu'on les ouvre ou qu'on actualise la page.</li>
       </ol>
-      <div style="margin-top:8px;font-size:12.5px;color:var(--muted)">Attention : le fichier doit s'appeler exactement <code>tarifs.js</code> (si votre ordinateur l'a renommé « tarifs (1).js », renommez-le avant de le déposer).</div>
+      <div style="margin-top:8px;font-size:12.5px;color:var(--muted)">Décimales : la virgule ou le point conviennent (0,45 ou 0.45).</div>
     </div>
   </div></div>
 </div>
 
 <script>
-  const KEYS = ["km","fait_a","club_journee","club_tir","club_repas","club_convivialite"];
-  const DEF = {km:0.40, fait_a:"Montpellier", club_journee:50, club_tir:2, club_repas:25, club_convivialite:50};
-  const CUR = Object.assign({}, DEF, window.TARIFS || {});
   const $ = id => document.getElementById(id);
-  const fr = v => typeof v === "number" ? v.toLocaleString("fr-FR",{maximumFractionDigits:2}) : v;
-
-  function load(){
-    KEYS.forEach(k => {
-      $(k).value = CUR[k];
-      $("w_"+k).textContent = "Actuellement en ligne : " + fr(CUR[k]) + (k==="km" ? " €/km" : k==="fait_a" ? "" : " €");
-      $(k).classList.remove("changed");
-    });
-  }
-  KEYS.forEach(k => $(k).addEventListener("input", () => {
-    $(k).classList.toggle("changed", String($(k).value) !== String(CUR[k]));
-  }));
-  $("btnReset").addEventListener("click", () => { load(); $("ok").style.display="none"; $("err").style.display="none"; });
-
-  $("btnDl").addEventListener("click", () => {
-    $("err").style.display = "none";
-    const v = {};
-    for (const k of KEYS){
-      if (k === "fait_a"){
-        v[k] = ($(k).value || "").trim().replace(/["\\]/g,"");
-        if (!v[k]){ return showErr("Merci d'indiquer la ville du « Fait à »."); }
-        continue;
-      }
-      const x = Number(String($(k).value).replace(",", "."));
-      if ($(k).value === "" || !Number.isFinite(x) || x < 0){ $(k).focus(); return showErr("Montant invalide : merci de vérifier les champs."); }
-      v[k] = Math.round(x*100)/100;
+  const fr = v => Number(v).toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2});
+  $("btnSheet").href = window.TARIFS_SHEET_URL;
+  (window.TARIFS_READY || Promise.resolve(window.TARIFS)).then(T => {
+    $("v_km").textContent = fr(T.km) + " €/km";
+    $("v_fait_a").textContent = T.fait_a;
+    ["club_journee","club_tir","club_repas","club_convivialite"].forEach(k => $("v_"+k).textContent = fr(T[k]) + " €");
+    if (window.TARIFS_SOURCE === "feuille"){
+      $("src").textContent = "✅ Tarifs lus dans la feuille Google Sheets.";
+      $("src").style.color = "#14532d";
+    } else {
+      $("src").textContent = "⚠️ Feuille Google injoignable : ce sont les tarifs de secours qui s'appliquent. Vérifiez que la feuille est partagée « Tous les utilisateurs disposant du lien ».";
+      $("src").style.color = "#991b1b";
     }
-    const d = new Date();
-    const today = String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear();
-    const js =
-`/* =========================================================
-   CD Tir 34 — TARIFS DE BASE
-   ---------------------------------------------------------
-   C'est le SEUL fichier à modifier pour changer les tarifs.
-   (Ou plus simple : utiliser la page reglages.html qui
-    fabrique ce fichier automatiquement.)
-
-   Règles : utiliser un POINT pour les décimales (0.40 et non 0,40)
-            ne pas toucher aux guillemets ni aux virgules en fin de ligne
-   ========================================================= */
-window.TARIFS = {
-  version: "${today}",          // date de mise à jour
-
-  // Formulaires Arbitre / Comité / Divers
-  km: ${v.km},                       // € par kilomètre
-  fait_a: "${v.fait_a}",          // ville du "Fait à ..." sur le PDF
-
-  // Formulaire Club (organisation compétition départementale)
-  club_journee: ${v.club_journee},               // € par journée d'organisation
-  club_tir: ${v.club_tir},                    // € par tir
-  club_repas: ${v.club_repas},                 // € par repas arbitre
-  club_convivialite: ${v.club_convivialite}           // € forfait moment de convivialité
-};
-`;
-    const blob = new Blob([js], {type:"text/javascript"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob); a.download = "tarifs.js";
-    document.body.appendChild(a); a.click(); a.remove();
-    $("ok").style.display = "block";
   });
-  function showErr(m){ $("err").textContent = m; $("err").style.display = "block"; }
-  load();
 </script>
 </body>
 </html>

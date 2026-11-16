@@ -642,13 +642,19 @@
     const eur = (x) =>
       Number(x || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
 
-    const TARIFS = window.TARIFS || {};
-    const TAUX_KM = Number(TARIFS.km ?? 0.40);
-    const FAIT_A = TARIFS.fait_a || "Montpellier";
-    const TAUX_TXT = TAUX_KM.toLocaleString("fr-FR",{minimumFractionDigits:2});
-    document.getElementById("taux").value = TAUX_TXT;
-    document.getElementById("tauxHint").textContent = "Taux fixé à " + TAUX_TXT + " €/km.";
-    document.getElementById("kmLbl").textContent = "Total KM (km × " + TAUX_TXT + ")";
+    let TAUX_KM, FAIT_A, TAUX_TXT;
+    function applyTarifs(){
+      const T = window.TARIFS || {};
+      TAUX_KM = Number(T.km ?? 0.40);
+      FAIT_A = T.fait_a || "Montpellier";
+      TAUX_TXT = TAUX_KM.toLocaleString("fr-FR",{minimumFractionDigits:2});
+      document.getElementById("taux").value = TAUX_TXT;
+      document.getElementById("tauxHint").textContent = "Taux fixé à " + TAUX_TXT + " €/km.";
+      document.getElementById("kmLbl").textContent = "Total KM (km × " + TAUX_TXT + ")";
+      if (typeof calc === "function") calc();
+    }
+    applyTarifs();
+    if (window.TARIFS_READY) window.TARIFS_READY.then(applyTarifs);
 
     function calc(){
       const km = n($("km").value);
