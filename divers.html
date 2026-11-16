@@ -559,8 +559,8 @@
           </div>
           <div>
             <label>Taux kilométrique (€/km)</label>
-            <input id="taux" type="text" value="0,40" readonly>
-            <div class="hint">Taux fixé à 0,40 €/km.</div>
+            <input id="taux" type="text" value="" readonly>
+            <div class="hint" id="tauxHint"></div>
           </div>
         </div>
 
@@ -588,7 +588,7 @@
 
         <div class="totals">
           <div class="kpi">
-            <b>Total KM (km × 0,40)</b>
+            <b id="kmLbl">Total KM</b>
             <span id="totalKm">—</span>
           </div>
           <div class="kpi">
@@ -629,6 +629,7 @@
     </div>
   </div>
 
+  <script src="tarifs.js"></script>
   <script>
     const $ = (id) => document.getElementById(id);
     const n = (v) => {
@@ -638,8 +639,13 @@
     const eur = (x) =>
       Number(x || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
 
-    const TAUX_KM = 0.40;
-    const FAIT_A = "Montpellier";
+    const TARIFS = window.TARIFS || {};
+    const TAUX_KM = Number(TARIFS.km ?? 0.40);
+    const FAIT_A = TARIFS.fait_a || "Montpellier";
+    const TAUX_TXT = TAUX_KM.toLocaleString("fr-FR",{minimumFractionDigits:2});
+    document.getElementById("taux").value = TAUX_TXT;
+    document.getElementById("tauxHint").textContent = "Taux fixé à " + TAUX_TXT + " €/km.";
+    document.getElementById("kmLbl").textContent = "Total KM (km × " + TAUX_TXT + ")";
 
     function calc(){
       const km = n($("km").value);
@@ -769,7 +775,7 @@
         row2("Date début", fmtDate($("d1").value), "Date fin", fmtDate($("d2").value));
 
         section(3,"Frais à rembourser");
-        row2("Distance (km)", km>0?km+" km":"—", "Taux kilométrique", "0,40 €/km");
+        row2("Distance (km)", km>0?km+" km":"—", "Taux kilométrique", TAUX_TXT+" €/km");
         row2("Péages (€)", eur2(peage), "Hôtel (€)", eur2(hotel));
         row2("Restaurant (€)", eur2(resto), "Autres (€)", eur2(autres));
 
@@ -778,7 +784,7 @@
         pdf.roundedRect(ML, kpiY, CW/2-3, 14, 2, 2, "FD");
         pdf.roundedRect(ML+CW/2+3, kpiY, CW/2-3, 14, 2, 2, "FD");
         pdf.setTextColor(0,80,65); pdf.setFont("helvetica","bold"); pdf.setFontSize(8);
-        pdf.text("Total KM (km × 0,40)", ML+4, kpiY+5);
+        pdf.text("Total KM (km × "+TAUX_TXT+")", ML+4, kpiY+5);
         pdf.text("Total général", ML+CW/2+7, kpiY+5);
         pdf.setTextColor(0,160,120); pdf.setFont("helvetica","bold"); pdf.setFontSize(12);
         pdf.text(km>0?eur2(totalKm):"—", ML+4, kpiY+12);

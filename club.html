@@ -625,31 +625,31 @@
           <div class="card">
             <div class="head">
               <h2>Éléments à rembourser</h2>
-              <span style="font-size:12px;font-weight:700;color:#3a1a7a;">Fixes : 50€ / 2€ / 25€ / 50€</span>
+              <span id="fixesTxt" style="font-size:12px;font-weight:700;color:#3a1a7a;"></span>
             </div>
             <div class="body">
               <div class="row">
                 <div class="field-group">
                   <label for="days">Nombre de journées d'organisation</label>
                   <input type="number" id="days" value="0" min="0" step="1"/>
-                  <div class="hint">50 € par journée</div>
+                  <div class="hint" id="hDay"></div>
                 </div>
                 <div class="field-group">
                   <label for="shots">Nombre de tirs</label>
                   <input type="number" id="shots" value="0" min="0" step="1"/>
-                  <div class="hint">2 € par tir</div>
+                  <div class="hint" id="hShot"></div>
                 </div>
               </div>
               <div class="row">
                 <div class="field-group">
                   <label for="meals">Nombre de repas arbitres</label>
                   <input type="number" id="meals" value="0" min="0" step="1"/>
-                  <div class="hint">25 € par repas</div>
+                  <div class="hint" id="hMeal"></div>
                 </div>
                 <div class="field-group" style="display:flex;align-items:flex-end;">
                   <label class="pill">
                     <input type="checkbox" id="convivial"/>
-                    <span>Moment de convivialité (forfait 50 €)</span>
+                    <span id="hConv">Moment de convivialité</span>
                   </label>
                 </div>
               </div>
@@ -734,11 +734,20 @@
 
   <div class="pdf-sheet" id="pdfSheet"></div>
 
+  <script src="tarifs.js"></script>
   <script>
-    const PRICE_DAY = 50;
-    const PRICE_SHOT = 2;
-    const PRICE_MEAL = 25;
-    const PRICE_CONV = 50;
+    const TARIFS = window.TARIFS || {};
+    const PRICE_DAY  = Number(TARIFS.club_journee ?? 50);
+    const PRICE_SHOT = Number(TARIFS.club_tir ?? 2);
+    const PRICE_MEAL = Number(TARIFS.club_repas ?? 25);
+    const PRICE_CONV = Number(TARIFS.club_convivialite ?? 50);
+    const fr = (v) => Number(v).toLocaleString("fr-FR",{maximumFractionDigits:2});
+    const FIXES_TXT = `Fixes : ${fr(PRICE_DAY)}€ / ${fr(PRICE_SHOT)}€ / ${fr(PRICE_MEAL)}€ / ${fr(PRICE_CONV)}€`;
+    document.getElementById("fixesTxt").textContent = FIXES_TXT;
+    document.getElementById("hDay").textContent  = `${fr(PRICE_DAY)} € par journée`;
+    document.getElementById("hShot").textContent = `${fr(PRICE_SHOT)} € par tir`;
+    document.getElementById("hMeal").textContent = `${fr(PRICE_MEAL)} € par repas`;
+    document.getElementById("hConv").textContent = `Moment de convivialité (forfait ${fr(PRICE_CONV)} €)`;
 
     const $ = id => document.getElementById(id);
 
@@ -785,7 +794,7 @@
       if (!Number.isFinite(n)) return 0;
       return Math.max(0, Math.floor(n));
     }
-    function euro(n){ return `${n.toLocaleString("fr-FR")} €`; }
+    function euro(n){ return `${n.toLocaleString("fr-FR",{maximumFractionDigits:2})} €`; }
 
     function escapeHtml(str){
       return (str ?? "").toString()
@@ -897,7 +906,7 @@
         : "-";
       const now = new Date().toLocaleString("fr-FR");
 
-      const convTxt = s.conv ? "Oui (forfait 50 €)" : "Non (0 €)";
+      const convTxt = s.conv ? `Oui (forfait ${fr(PRICE_CONV)} €)` : "Non (0 €)";
       const attestTxt = fields.attest.checked ? "OUI" : "NON";
 
       fields.pdfSheet.innerHTML = `
@@ -925,19 +934,19 @@
             <div class="pdf-card">
               <div class="hd">
                 <span>Éléments à rembourser</span>
-                <span style="font-weight:900;color:#3a1a7a;">Fixes : 50€ / 2€ / 25€ / 50€</span>
+                <span style="font-weight:900;color:#3a1a7a;">${FIXES_TXT}</span>
               </div>
               <div class="bd">
                 <div class="pdf-row">
-                  <div class="pdf-label">Journées (${s.days} × 50€)</div>
+                  <div class="pdf-label">Journées (${s.days} × ${fr(PRICE_DAY)}€)</div>
                   <div class="pdf-val"><b>${euro(s.amountDays)}</b></div>
                 </div>
                 <div class="pdf-row">
-                  <div class="pdf-label">Tirs (${s.shots} × 2€)</div>
+                  <div class="pdf-label">Tirs (${s.shots} × ${fr(PRICE_SHOT)}€)</div>
                   <div class="pdf-val"><b>${euro(s.amountShots)}</b></div>
                 </div>
                 <div class="pdf-row">
-                  <div class="pdf-label">Repas arbitres (${s.meals} × 25€)</div>
+                  <div class="pdf-label">Repas arbitres (${s.meals} × ${fr(PRICE_MEAL)}€)</div>
                   <div class="pdf-val"><b>${euro(s.amountMeals)}</b></div>
                 </div>
                 <div class="pdf-row">
@@ -1068,8 +1077,8 @@
 
         // 3) Montants
         section(3,"Demande financière");
-        row2("Journées d'arbitrage ("+s.days+" × 50 €)", eur2(s.amountDays), "Tirs ("+s.shots+" × 2 €)", eur2(s.amountShots));
-        row2("Repas ("+s.meals+" × 25 €)", eur2(s.amountMeals), "Convivialité (forfait 50 €)", eur2(s.amountConv));
+        row2("Journées d'organisation ("+s.days+" × "+fr(PRICE_DAY)+" €)", eur2(s.amountDays), "Tirs ("+s.shots+" × "+fr(PRICE_SHOT)+" €)", eur2(s.amountShots));
+        row2("Repas ("+s.meals+" × "+fr(PRICE_MEAL)+" €)", eur2(s.amountMeals), "Convivialité (forfait "+fr(PRICE_CONV)+" €)", eur2(s.amountConv));
 
         // Total
         const kpiY = y;
